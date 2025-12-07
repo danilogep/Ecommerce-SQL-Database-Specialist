@@ -36,7 +36,7 @@ A entidade `Entrega` foi criada como uma tabela independente, vinculada ao `Pedi
 
 Abaixo está a representação gráfica do modelo refinado:
 
-![Diagrama EER do E-commerce](diagrama_ecommerce.png)
+![Diagrama EER do E-commerce](/img/diagrama_ecommerce.png)
 
 ## 🛠️ Ferramentas Utilizadas
 
@@ -46,5 +46,5 @@ Abaixo está a representação gráfica do modelo refinado:
 ## 📂 Estrutura do Repositório
 
 * `ecommerce.mwb`: Arquivo original do projeto no MySQL Workbench.
-* `diagrama_ecommerce.png`: Imagem do diagrama visual.
+* `\img\diagrama_ecommerce.png`: Imagem do diagrama visual.
 * `README.md`: Documentação do projeto.
