@@ -83,10 +83,38 @@ ELSEIF p_opcao = 2 THEN
 ```
 
 A implementação completa está no arquivo script_procedures.sql.
- 
-## 📂 Estrutura Atualizada do Repositório
-* script_tabelas.sql: Criação do Banco de Dados (Parte 1).
-* script_perguntas.sql: Queries analíticas (Parte 1).
-* script_indices.sql: Otimização de performance (Parte 2).
-* script_procedures.sql: Automação com Procedures (Parte 2).
-* ecommerce.mwb: Modelo visual.
+
+---
+
+# 🛡️ Parte 3: Segurança e Regras de Negócio (Views e Triggers)
+
+Nesta etapa, o foco foi a segurança dos dados, controle de acesso e auditoria, implementando **Views** para restringir a visibilidade de dados e **Triggers** para garantir histórico e integridade.
+
+## 👁️ Views e Controle de Acesso
+
+Foram criadas visões estratégicas para abstrair a complexidade das queries e permitir o controle de acesso granular via `GRANT/REVOKE`.
+
+### Cenários Implementados
+1.  **`vw_clientes_por_localidade`**: Agrupa clientes por região (Ideal para logística).
+2.  **`vw_produtos_mais_vendidos`**: Relatório gerencial de performance de vendas.
+3.  **`vw_relatorio_pedidos`**: Visão consolidada unindo Cliente, Pedido, Pagamento e Entrega.
+
+### Definição de Permissões
+* **Usuário Gerente:** Acesso total aos relatórios de vendas e fornecedores.
+* **Usuário Logística:** Acesso restrito apenas à localização dos clientes, sem visualização de faturamento.
+
+> *Script:* `script_views_permissoes.sql`
+
+## 🔫 Triggers (Gatilhos de Auditoria)
+
+Foram implementados gatilhos para monitorar eventos de modificação e exclusão de dados críticos.
+
+### 1. Auditoria de Exclusão (`BEFORE DELETE`)
+Quando um cliente é removido do sistema, seus dados principais são automaticamente copiados para a tabela `cliente_backup`.
+* **Objetivo:** Evitar perda de dados acidental e manter histórico para compliance.
+
+### 2. Histórico de Preços (`BEFORE UPDATE`)
+Ao atualizar o valor de um produto, o sistema verifica se houve alteração monetária e salva o valor antigo na tabela `historico_precos`.
+* **Objetivo:** Monitorar a flutuação de preços e inflação dos produtos ao longo do tempo.
+
+> *Script:* `script_triggers.sql`
