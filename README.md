@@ -118,3 +118,30 @@ Ao atualizar o valor de um produto, o sistema verifica se houve alteração mone
 * **Objetivo:** Monitorar a flutuação de preços e inflação dos produtos ao longo do tempo.
 
 > *Script:* `script_triggers.sql`
+
+---
+
+# 💾 Parte 4: Transações, Backup e Recuperação
+
+Focada na integridade e segurança dos dados, esta etapa implementou controles transacionais (ACID) e rotinas de backup.
+
+## 🔄 Transações (ACID)
+
+Foram criados scripts para garantir que operações complexas sejam atômicas (ou tudo acontece, ou nada acontece).
+
+### Destaques:
+* **Transação Simples:** Script para atualização de status de pedido e inserção de rastreio logístico simultaneamente. Se a inserção do rastreio falhar, o status não é alterado (conceito de Atomicidade).
+* **Transação com Procedure (`sp_inserir_pedido_seguro`):** Procedure que encapsula a criação de um pedido. Utiliza `DECLARE EXIT HANDLER FOR SQLEXCEPTION` para executar um **ROLLBACK** automático caso qualquer erro ocorra durante a inserção dos itens do pedido.
+
+> *Script:* `script_transacoes.sql`
+
+## 📦 Backup e Recovery
+
+Foi realizado o backup completo do banco de dados utilizando a ferramenta `mysqldump`, garantindo a preservação não apenas dos dados, mas também da estrutura, procedures, triggers e eventos.
+
+**Comando utilizado para Backup:**
+```bash
+mysqldump -u root -p --routines --events --databases ecommerce > backup_ecommerce.sql
+```
+*Arquivo de Backup*: O arquivo backup_ecommerce.sql disponível neste repositório contém o dump completo para restauração do ambiente em caso de falhas.
+
