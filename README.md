@@ -23,7 +23,6 @@ O projeto foi estruturado para resolver lacunas comuns em modelagens simples, at
 Abaixo, o diagrama Entidade-Relacionamento final refinado, aplicando boas práticas como padronização de nomenclatura (*snake_case*) e tipagem correta de dados (*DECIMAL* para valores monetários, *DATE* para datas).
 
 ![Diagrama EER Final](img/diagrama_final.png)
-*(Certifique-se de salvar seu print do diagrama na pasta img com este nome)*
 
 ### Decisões de Arquitetura:
 * **Herança na Tabela Cliente:** A tabela `cliente` armazena dados globais, enquanto `pessoa_fisica` e `pessoa_juridica` armazenam dados específicos, vinculados por FK 1:1.
