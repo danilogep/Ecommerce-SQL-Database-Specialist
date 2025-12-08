@@ -2,7 +2,7 @@
 
 Este projeto consiste na modelagem completa e implementação de um banco de dados relacional para um cenário de E-commerce. 
 
- objetivo foi refinar um modelo conceitual inicial, transformá-lo em esquema lógico e, finalmente, scriptar a criação física do banco de dados (DDL) e realizar consultas analíticas (DQL).
+O objetivo foi refinar um modelo conceitual inicial, transformá-lo em esquema lógico e, finalmente, scriptar a criação física do banco de dados (DDL) e realizar consultas analíticas (DQL).
 
 ## 🎯 Objetivos do Desafio
 
