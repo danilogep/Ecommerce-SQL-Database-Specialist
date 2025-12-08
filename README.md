@@ -1,50 +1,62 @@
-# Desafio de Projeto: Refinando um Projeto Conceitual de Banco de Dados – E-COMMERCE
+# 🛒 E-commerce Database Project: Do Modelo Conceitual à Implementação SQL
 
-Este repositório contém a resolução do desafio de projeto **"Refinando um Projeto Conceitual de Banco de Dados – E-COMMERCE"**, parte da formação de Ciência de Dados / SQL.
+Este projeto consiste na modelagem completa e implementação de um banco de dados relacional para um cenário de E-commerce. 
 
-O objetivo foi refinar um modelo conceitual existente para atender a cenários mais complexos e realistas de um sistema de comércio eletrônico.
+ objetivo foi refinar um modelo conceitual inicial, transformá-lo em esquema lógico e, finalmente, scriptar a criação física do banco de dados (DDL) e realizar consultas analíticas (DQL).
 
-## 📋 Objetivos do Desafio
+## 🎯 Objetivos do Desafio
 
-O projeto original precisava de melhorias em três áreas principais, que foram implementadas neste modelo:
+O projeto foi estruturado para resolver lacunas comuns em modelagens simples, atendendo a requisitos de negócio complexos:
 
-1.  **Cliente PJ e PF:** Uma conta pode ser Pessoa Jurídica ou Física, mas não pode ter as duas informações simultaneamente.
-2.  **Pagamento:** Capacidade de cadastrar mais de uma forma de pagamento para o mesmo pedido.
-3.  **Entrega:** Controle de status e código de rastreio independente do pedido.
+1.  **Cliente PJ e PF:** Implementação de especialização/herança para permitir que um cliente seja Pessoa Física (CPF) ou Jurídica (CNPJ), garantindo integridade e evitando redundância.
+2.  **Múltiplos Meios de Pagamento:** Desacoplamento da entidade Pagamento para permitir que um único pedido seja pago com múltiplas formas (ex: Cartão + Pix).
+3.  **Gestão de Entregas:** Criação de entidade de Entrega independente, permitindo rastreio (Tracking Code) e status logístico separado do status financeiro do pedido.
 
-## 🚀 Melhorias Implementadas e Justificativas
+## 🛠️ Tecnologias Utilizadas
 
-Abaixo, detalho as decisões de modelagem tomadas para atender aos requisitos (Baseado no Diagrama EER desenvolvido no MySQL Workbench).
+* **MySQL Workbench 8.0:** Modelagem EER e execução de scripts SQL.
+* **Linguagem SQL:** DDL (Data Definition Language) para criação e DQL (Data Query Language) para análise.
+* **Git/GitHub:** Versionamento e documentação.
 
-### 1. Cliente: Generalização e Especialização (Herança)
-Para resolver a questão de PJ (Pessoa Jurídica) e PF (Pessoa Física), foi utilizada a técnica de herança.
-* **Tabela Pai (`Cliente`):** Contém os dados comuns a todos (ID, Nome, Endereço, Contato).
-* **Tabelas Filhas (`Pessoa_Fisica` e `Pessoa_Juridica`):** Contêm apenas os dados específicos (CPF/RG para PF e CNPJ/Razão Social para PJ).
-* **Justificativa:** Essa abordagem evita campos nulos (NULL) no banco de dados e garante a integridade dos dados, impedindo que um cliente tenha CPF e CNPJ ao mesmo tempo incorretamente.
+## 📊 Modelagem de Dados (Diagrama EER)
 
-### 2. Gestão de Pagamentos (Relacionamento 1:N)
-A entidade `Pagamento` foi separada da entidade `Pedido`.
-* **Mudança:** Criação de uma tabela dedicada `Pagamento` conectada a `Pedido` através de um relacionamento **1 para Muitos (1:N)**.
-* **Justificativa:** No e-commerce moderno, é comum um cliente dividir o pagamento (ex: parte no cartão, parte em vale-presente). A nova estrutura permite registrar múltiplos métodos de pagamento vinculados a um único ID de pedido.
+Abaixo, o diagrama Entidade-Relacionamento final refinado, aplicando boas práticas como padronização de nomenclatura (*snake_case*) e tipagem correta de dados (*DECIMAL* para valores monetários, *DATE* para datas).
 
-### 3. Logística e Entrega
-A entidade `Entrega` foi criada como uma tabela independente, vinculada ao `Pedido`.
-* **Atributos:** Inclui `status_entrega` (ex: Em trânsito, Entregue), `codigo_rastreio` e `data_previsao`.
-* **Justificativa:** O status do pedido (Financeiro) é diferente do status da entrega (Logístico). Separar essas entidades permite, por exemplo, gerenciar múltiplas entregas para um mesmo pedido (caso os produtos saiam de armazéns diferentes) e atualizações de rastreio sem afetar a integridade do registro de vendas.
+![Diagrama EER Final](img/diagrama_final.png)
+*(Certifique-se de salvar seu print do diagrama na pasta img com este nome)*
 
-## 🖼️ Diagrama EER (Entity Relationship Diagram)
+### Decisões de Arquitetura:
+* **Herança na Tabela Cliente:** A tabela `cliente` armazena dados globais, enquanto `pessoa_fisica` e `pessoa_juridica` armazenam dados específicos, vinculados por FK 1:1.
+* **Relacionamentos N:M:** Tabelas associativas criadas para gerenciar produtos por pedido, produtos por fornecedor e produtos em estoque.
 
-Abaixo está a representação gráfica do modelo refinado:
+## 📂 Estrutura do Projeto
 
-![Diagrama EER do E-commerce](/img/diagrama_ecommerce.png)
+* `script_tabelas.sql`: Script completo contendo a criação do Schema, Tabelas e inserção de dados fictícios para teste.
+* `script_perguntas.sql`: Queries complexas elaboradas para responder perguntas de negócio.
+* `ecommerce.mwb`: Arquivo fonte da modelagem no MySQL Workbench.
 
-## 🛠️ Ferramentas Utilizadas
+## 🚀 Como Executar
 
-* **MySQL Workbench:** Para modelagem do diagrama EER e criação do esquema.
-* **Notação Pé de Galinha (Crow's Foot):** Para representação dos relacionamentos.
+1.  Tenha o MySQL Server instalado localmente.
+2.  Abra o arquivo `script_tabelas.sql` no seu cliente MySQL (Workbench, DBeaver, etc.).
+3.  Execute todo o script para criar o banco `ecommerce` e popular as tabelas.
+4.  Abra o arquivo `script_perguntas.sql` para rodar as análises de negócio.
 
-## 📂 Estrutura do Repositório
+## 🧠 Análise de Dados (Business Intelligence)
 
-* `ecommerce.mwb`: Arquivo original do projeto no MySQL Workbench.
-* `\img\diagrama_ecommerce.png`: Imagem do diagrama visual.
-* `README.md`: Documentação do projeto.
+Além da criação do banco, foram elaboradas queries SQL para extrair insights valiosos do negócio.
+
+### 1. Quantos pedidos foram feitos por cada cliente?
+Esta consulta utiliza `JOIN` e `GROUP BY` para contar o volume de vendas por consumidor.
+
+![Resultado Query 1](img/query_pedidos_cliente.png)
+
+### 2. Relação de Pedidos: Status Financeiro vs. Status Logístico
+Aqui unimos as tabelas `Pedido` e `Entrega` para verificar se pedidos pagos já foram enviados, cruzando informações críticas para a operação.
+
+![Resultado Query 2](img/query_status_entrega.png)
+
+### 3. Clientes de Alto Valor (Ticket Médio)
+Utilizando a cláusula `HAVING`, filtramos apenas os clientes que somam mais de R$ 4.000,00 em compras totais.
+
+![Resultado Query 3](img/query_clientes_vip.png)
