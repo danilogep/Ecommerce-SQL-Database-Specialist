@@ -53,14 +53,15 @@ que apareceram os dois erros corrigidos em
 ## O que o índice realmente fez
 
 Relatório completo, com planos de execução lado a lado: **[docs/benchmark.md](docs/benchmark.md)**.
-Mediana de 7 execuções após aquecimento, MySQL 8.4.3, InnoDB, buffer pool de 512 MB.
+Mediana de 7 execuções após aquecimento, no MySQL 8.4 que o `docker compose` sobe —
+qualquer pessoa repete o número com dois comandos.
 
 | # | consulta | sem índice | com índice | resultado |
 |---|---|---:|---:|---|
-| 1 | `JOIN cliente × pedido` agrupado por cliente | 238,7 ms | 235,9 ms | **sem ganho** |
-| 2 | `SELECT * FROM produto WHERE categoria = ?` | 134,1 ms | 124,4 ms | **sem ganho** |
-| 3 | `SELECT COUNT(*) FROM produto WHERE categoria = ?` | 26,6 ms | 3,3 ms | **8,1× mais rápido** |
-| 4 | `GROUP BY status_entrega` sobre 100 mil entregas | 189,4 ms | 74,3 ms | **2,6× mais rápido** |
+| 1 | `JOIN cliente × pedido` agrupado por cliente | 121,0 ms | 123,7 ms | **sem ganho** |
+| 2 | `SELECT * FROM produto WHERE categoria = ?` | 137,3 ms | 131,7 ms | **sem ganho** |
+| 3 | `SELECT COUNT(*) FROM produto WHERE categoria = ?` | 20,0 ms | 6,7 ms | **3,0× mais rápido** |
+| 4 | `GROUP BY status_entrega` sobre 100 mil entregas | 84,5 ms | 46,7 ms | **1,8× mais rápido** |
 
 Dois dos quatro casos não melhoraram. Isso **não** é defeito do experimento — é o
 resultado, e é a parte mais útil dele:
@@ -69,8 +70,7 @@ resultado, e é a parte mais útil dele:
 InnoDB cria um índice automaticamente para sustentar a FK. `CREATE INDEX
 idx_pedido_cliente ON pedido(id_cliente)` não adiciona capacidade nenhuma: o MySQL
 apenas passa a usar o novo índice no lugar do que ele mesmo havia criado, e **descarta
-o antigo**. O plano antes e depois é idêntico — `p index · key=…(id_cliente) ·
-rows≈99.869` nos dois.
+o antigo**. O plano antes e depois é idêntico, com as mesmas ~99 mil linhas estimadas.
 
 Efeito colateral que só aparece quando se tenta desfazer: depois disso, o `DROP INDEX
 idx_pedido_cliente` falha com `ERROR 1553 — needed in a foreign key constraint`. O
@@ -79,17 +79,33 @@ idx_pedido_cliente` falha com `ERROR 1553 — needed in a foreign key constraint
 chave estrangeira antes de derrubar o nosso — senão a segunda medição seria impossível.
 
 **2. O índice da consulta 2 funciona; a consulta é que não aproveita.** O `EXPLAIN`
-muda de `ALL · rows≈50.256` para `ref · rows≈5.000` — o índice **está** sendo usado e
+muda de `ALL · rows≈48.068` para `ref · rows≈5.000` — o índice **está** sendo usado e
 corta 90% das linhas examinadas. Só que o `SELECT *` obriga o MySQL a voltar à tabela
 para buscar cada uma das 5.000 linhas, e é essa ida e volta que domina o tempo.
 
 A consulta 3 é a prova: **mesma coluna, mesmo índice, só a lista de seleção muda.**
 Com `COUNT(*)`, a resposta inteira cabe no índice, o MySQL nunca toca na tabela
-(`Extra: Using index`) e o tempo cai 8×.
+(`Extra: Using index`) e o tempo cai a um terço.
 
 > **A lição que este repositório sustenta com número:** índice não acelera tabela,
 > acelera *consulta*. O ganho mora na relação entre as colunas indexadas e as colunas
 > pedidas — não no `CREATE INDEX`.
+
+### O mesmo experimento em outra máquina
+
+A bateria também foi rodada contra um MySQL 8.4 instalado direto no host, com os dados
+em outro disco. Os tempos absolutos mudam bastante; **as quatro conclusões, não**:
+
+| # | container (`docker compose`) | MySQL no host |
+|---|---|---|
+| 1 | 121,0 → 123,7 ms · sem ganho | 238,7 → 235,9 ms · sem ganho |
+| 2 | 137,3 → 131,7 ms · sem ganho | 134,1 → 124,4 ms · sem ganho |
+| 3 | 20,0 → 6,7 ms · 3,0× | 26,6 → 3,3 ms · 8,1× |
+| 4 | 84,5 → 46,7 ms · 1,8× | 189,4 → 74,3 ms · 2,6× |
+
+É por isso que o relatório guarda o `EXPLAIN` junto do cronômetro. O tempo depende de
+disco, cache e cliente; o **plano de execução** é o que se compara entre ambientes — e
+ele é idêntico nos dois.
 
 ### Reproduzindo
 

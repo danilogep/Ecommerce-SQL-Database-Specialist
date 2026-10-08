@@ -14,6 +14,10 @@
 -- Tempo: ~30–60 s em um MySQL 8 local.
 -- =============================================================================
 
+-- Charset explicito na conexao. O entrypoint do container mysql executa os
+-- scripts com o cliente nos padroes dele; sem esta linha, um arquivo UTF-8
+-- e lido como latin1 e 'Moveis' entra no banco como 'MA3veis'.
+SET NAMES utf8mb4;
 USE ecommerce;
 
 -- Carga em massa: desligar checagens e autocommit reduz o tempo em ordens de

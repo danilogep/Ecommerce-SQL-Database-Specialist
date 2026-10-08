@@ -1,6 +1,10 @@
 -- -----------------------------------------------------
 -- 1. CRIAÇÃO DO BANCO DE DADOS E TABELAS
 -- -----------------------------------------------------
+-- Charset explicito na conexao. O entrypoint do container mysql executa os
+-- scripts com o cliente nos padroes dele; sem esta linha, um arquivo UTF-8
+-- e lido como latin1 e 'Moveis' entra no banco como 'MA3veis'.
+SET NAMES utf8mb4;
 DROP DATABASE IF EXISTS ecommerce;
 CREATE DATABASE ecommerce;
 USE ecommerce;

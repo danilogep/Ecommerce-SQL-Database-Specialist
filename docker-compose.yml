@@ -27,7 +27,18 @@ services:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./sql_implementation:/docker-entrypoint-initdb.d:ro
+      # Os scripts entram um a um, e não a pasta inteira: o MySQL executa TUDO
+      # que encontrar em /docker-entrypoint-initdb.d em ordem alfabética, e
+      # `backup_ecommerce.sql` viria depois do 08 — um mysqldump que recria o
+      # banco com os dados antigos e apaga os 100 mil pedidos do seed.
+      - ./sql_implementation/01_tabelas.sql:/docker-entrypoint-initdb.d/01_tabelas.sql:ro
+      - ./sql_implementation/02_seed_massa.sql:/docker-entrypoint-initdb.d/02_seed_massa.sql:ro
+      - ./sql_implementation/03_indices.sql:/docker-entrypoint-initdb.d/03_indices.sql:ro
+      - ./sql_implementation/04_views_permissoes.sql:/docker-entrypoint-initdb.d/04_views_permissoes.sql:ro
+      - ./sql_implementation/05_procedure.sql:/docker-entrypoint-initdb.d/05_procedure.sql:ro
+      - ./sql_implementation/06_triggers.sql:/docker-entrypoint-initdb.d/06_triggers.sql:ro
+      - ./sql_implementation/07_transacoes.sql:/docker-entrypoint-initdb.d/07_transacoes.sql:ro
+      - ./sql_implementation/08_perguntas.sql:/docker-entrypoint-initdb.d/08_perguntas.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot"]
       interval: 10s

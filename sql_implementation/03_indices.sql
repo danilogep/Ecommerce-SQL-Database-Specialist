@@ -1,3 +1,7 @@
+-- Charset explicito na conexao. O entrypoint do container mysql executa os
+-- scripts com o cliente nos padroes dele; sem esta linha, um arquivo UTF-8
+-- e lido como latin1 e 'Moveis' entra no banco como 'MA3veis'.
+SET NAMES utf8mb4;
 USE ecommerce;
 
 -- Reexecutar este script isolado dá "Duplicate key name": o MySQL nao tem

@@ -2,7 +2,7 @@
 
 Gerado por `python scripts/benchmark.py`. Mediana de 7 execuções, após uma execução de aquecimento descartada.
 
-**Ambiente:** MySQL 8.4.3 · InnoDB · massa de `00_seed_massa.sql`
+**Ambiente:** MySQL 8.4.11 · InnoDB · massa de `00_seed_massa.sql`
 
 | tabela | linhas |
 |---|---:|
@@ -17,10 +17,10 @@ Gerado por `python scripts/benchmark.py`. Mediana de 7 execuções, após uma ex
 
 | # | consulta | sem índice | com índice | variação |
 |---|---|---:|---:|---:|
-| 1 | Pedidos por cliente | 238.7 ms | 235.9 ms | 1.01× (sem ganho) |
-| 2 | Produtos de uma categoria | 134.1 ms | 124.4 ms | 1.08× (sem ganho) |
-| 3 | Contagem por categoria | 26.6 ms | 3.3 ms | **8.1× mais rápido** |
-| 4 | Entregas por status | 189.4 ms | 74.3 ms | **2.6× mais rápido** |
+| 1 | Pedidos por cliente | 121.0 ms | 123.7 ms | 0.98× (sem ganho) |
+| 2 | Produtos de uma categoria | 137.3 ms | 131.7 ms | 1.04× (sem ganho) |
+| 3 | Contagem por categoria | 20.0 ms | 6.7 ms | **3.0× mais rápido** |
+| 4 | Entregas por status | 84.5 ms | 46.7 ms | **1.8× mais rápido** |
 
 ## 1. Pedidos por cliente
 
@@ -34,8 +34,8 @@ SELECT c.nome, COUNT(p.id_pedido) AS total FROM cliente c INNER JOIN pedido p ON
 
 | | plano de execução | linhas estimadas | mediana | min | max |
 |---|---|---:|---:|---:|---:|
-| **sem índice** | `p` index · key=fk_pedido_cliente · rows≈99.871 · where; index; temporary; filesort<br>`c` eq_ref · key=PRIMARY · rows≈1 | 99.871 | 238.7 ms | 225.5 ms | 332.5 ms |
-| **com índice** | `p` index · key=fk_pedido_cliente · rows≈98.581 · where; index; temporary; filesort<br>`c` eq_ref · key=PRIMARY · rows≈1 | 98.581 | 235.9 ms | 234.6 ms | 246.8 ms |
+| **sem índice** | `p` index · key=fk_pedido_cliente · rows≈99.937 · where; index; temporary; filesort<br>`c` eq_ref · key=PRIMARY · rows≈1 | 99.937 | 121.0 ms | 109.8 ms | 165.7 ms |
+| **com índice** | `p` index · key=fk_pedido_cliente · rows≈99.869 · where; index; temporary; filesort<br>`c` eq_ref · key=PRIMARY · rows≈1 | 99.869 | 123.7 ms | 107.9 ms | 174.1 ms |
 
 ## 2. Produtos de uma categoria
 
@@ -49,8 +49,8 @@ SELECT * FROM produto WHERE categoria = 'Móveis'
 
 | | plano de execução | linhas estimadas | mediana | min | max |
 |---|---|---:|---:|---:|---:|
-| **sem índice** | `produto` ALL · key=NULL · rows≈50.204 · where | 50.204 | 134.1 ms | 128.3 ms | 157.8 ms |
-| **com índice** | `produto` ref · key=idx_produto_categoria · rows≈5.000 | 5.000 | 124.4 ms | 122.5 ms | 128.4 ms |
+| **sem índice** | `produto` ALL · key=NULL · rows≈48.068 · where | 48.068 | 137.3 ms | 133.4 ms | 175.0 ms |
+| **com índice** | `produto` ref · key=idx_produto_categoria · rows≈5.000 | 5.000 | 131.7 ms | 125.7 ms | 167.9 ms |
 
 ## 3. Contagem por categoria
 
@@ -64,8 +64,8 @@ SELECT COUNT(*) FROM produto WHERE categoria = 'Móveis'
 
 | | plano de execução | linhas estimadas | mediana | min | max |
 |---|---|---:|---:|---:|---:|
-| **sem índice** | `produto` ALL · key=NULL · rows≈50.204 · where | 50.204 | 26.6 ms | 24.8 ms | 29.9 ms |
-| **com índice** | `produto` ref · key=idx_produto_categoria · rows≈5.000 · index | 5.000 | 3.3 ms | 3.1 ms | 4.6 ms |
+| **sem índice** | `produto` ALL · key=NULL · rows≈48.068 · where | 48.068 | 20.0 ms | 18.4 ms | 24.1 ms |
+| **com índice** | `produto` ref · key=idx_produto_categoria · rows≈5.000 · index | 5.000 | 6.7 ms | 3.9 ms | 7.3 ms |
 
 ## 4. Entregas por status
 
@@ -79,5 +79,5 @@ SELECT status_entrega, COUNT(*) FROM entrega GROUP BY status_entrega
 
 | | plano de execução | linhas estimadas | mediana | min | max |
 |---|---|---:|---:|---:|---:|
-| **sem índice** | `entrega` ALL · key=NULL · rows≈105.003 · temporary | 105.003 | 189.4 ms | 182.0 ms | 193.5 ms |
-| **com índice** | `entrega` index · key=idx_entrega_status · rows≈101.484 · index | 101.484 | 74.3 ms | 73.6 ms | 77.2 ms |
+| **sem índice** | `entrega` ALL · key=NULL · rows≈105.003 · temporary | 105.003 | 84.5 ms | 83.5 ms | 124.5 ms |
+| **com índice** | `entrega` index · key=idx_entrega_status · rows≈100.662 · index | 100.662 | 46.7 ms | 45.6 ms | 89.1 ms |
