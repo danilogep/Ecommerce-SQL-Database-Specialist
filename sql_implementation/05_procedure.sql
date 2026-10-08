@@ -51,12 +51,19 @@ DELIMITER ;
 -- TESTES DA PROCEDURE
 -- ==============================================================================
 
--- 1. Testando Inserção (Opção 1) -> Passamos NULL no ID pois é Auto Increment
+-- O teste trabalha sobre um cliente criado aqui mesmo, capturado em @id. Fixar
+-- um ID na mao (era 4) quebra assim que o banco tem volume: o cliente 4 passa a
+-- ter pedidos e o DELETE esbarra na chave estrangeira.
+
+-- 1. Insercao (opcao 1) -> ID nulo porque a coluna e AUTO_INCREMENT
 CALL gerenciar_cliente(1, NULL, 'Cliente Teste Procedure', 'Rua Procedure, 99', 'teste@proc.com');
+SET @id = LAST_INSERT_ID();
 
--- 2. Testando Atualização (Opção 2) -> Vamos atualizar o cliente que acabamos de criar (supondo que seja o ID 4 ou o último criado)
--- (Verifique o ID criado no passo anterior e substitua abaixo se necessário)
-CALL gerenciar_cliente(2, 4, 'Cliente Teste ATUALIZADO', 'Rua Nova, 100', 'novo@proc.com');
+-- 2. Atualizacao (opcao 2) sobre o cliente recem-criado
+CALL gerenciar_cliente(2, @id, 'Cliente Teste ATUALIZADO', 'Rua Nova, 100', 'novo@proc.com');
+SELECT id_cliente, nome, email FROM cliente WHERE id_cliente = @id;
 
--- 3. Testando Deleção (Opção 3)
-CALL gerenciar_cliente(3, 4, NULL, NULL, NULL);
+-- 3. Delecao (opcao 3). Como o cliente nao tem pedidos, nao ha FK no caminho.
+--    Depois que 06_triggers.sql rodar, esta mesma delecao passa a deixar rastro
+--    em cliente_backup.
+CALL gerenciar_cliente(3, @id, NULL, NULL, NULL);

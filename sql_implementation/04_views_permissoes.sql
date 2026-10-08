@@ -69,7 +69,14 @@ GRANT SELECT ON ecommerce.vw_produtos_fornecedores TO 'gerente'@'localhost';
 -- O Funcionário deve ver apenas de onde são os clientes para planejar rotas, 
 -- mas NÃO deve ver quanto a empresa vendeu ou fornecedores.
 GRANT SELECT ON ecommerce.vw_clientes_por_localidade TO 'funcionario_logistica'@'localhost';
--- Revogando acesso caso tenha sido dado anteriormente
-REVOKE SELECT ON ecommerce.vw_produtos_mais_vendidos FROM 'funcionario_logistica'@'localhost';
+
+-- O acesso a vw_produtos_mais_vendidos simplesmente nao e concedido a este
+-- usuario. Um REVOKE aqui falharia com o erro 1147 ("no such grant defined"):
+-- o MySQL recusa revogar um privilegio que nunca foi dado. Privilegio minimo
+-- se faz por omissao, nao por revogacao.
+
+-- Conferencia do que cada usuario enxerga:
+SHOW GRANTS FOR 'gerente'@'localhost';
+SHOW GRANTS FOR 'funcionario_logistica'@'localhost';
 
 FLUSH PRIVILEGES;

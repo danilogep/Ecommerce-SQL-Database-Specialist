@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS cliente_backup (
 );
 
 -- 2. Criar a Trigger
+DROP TRIGGER IF EXISTS trg_bkp_cliente_before_delete;
+
 DELIMITER $$
 
 CREATE TRIGGER trg_bkp_cliente_before_delete
@@ -44,6 +46,8 @@ CREATE TABLE IF NOT EXISTS historico_precos (
 );
 
 -- 2. Criar a Trigger
+DROP TRIGGER IF EXISTS trg_atualiza_preco_produto;
+
 DELIMITER $$
 
 CREATE TRIGGER trg_atualiza_preco_produto

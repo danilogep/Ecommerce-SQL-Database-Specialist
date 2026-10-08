@@ -1,0 +1,2 @@
+# Dependência do scripts/benchmark.py
+PyMySQL>=1.1

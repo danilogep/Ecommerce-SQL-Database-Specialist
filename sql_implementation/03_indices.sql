@@ -1,5 +1,9 @@
 USE ecommerce;
 
+-- Reexecutar este script isolado dá "Duplicate key name": o MySQL nao tem
+-- DROP INDEX IF EXISTS. Rode a sequencia a partir de 01_tabelas.sql, que
+-- recria o banco, ou use scripts/benchmark.py, que gerencia os indices.
+
 -- ==============================================================================
 -- PARTE 1: ÍNDICES (Otimização de Performance)
 -- ==============================================================================
