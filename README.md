@@ -313,7 +313,7 @@ ter dado certo até alguém excluir um cliente e perceber que nada foi registrad
 
 ## Projeto irmão
 
-[**Desafio2-SQL-Database-Specialist**](https://github.com/danilogep/Desafio2-SQL-Database-Specialist) —
+[**Oficina-SQL-Database-Specialist**](https://github.com/danilogep/Oficina-SQL-Database-Specialist) —
 oficina mecânica. Mesmo stack, problema diferente: lá o eixo é **modelagem** (ordens de
 serviço que congelam o preço praticado no momento da venda, para que uma atualização na
 tabela de preços não reescreva o histórico financeiro). Aqui o eixo é **performance
